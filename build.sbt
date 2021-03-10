@@ -1,5 +1,5 @@
-lazy val root = Project("scala-starter", file(".")).settings(
-  name := "scala-starter",
+lazy val root = Project("flyer-analytics-service", file(".")).settings(
+  name := "flyer-analytics-service",
   scalafmtOnCompile := true,
   libraryDependencies ++= Dependencies.deps
 )

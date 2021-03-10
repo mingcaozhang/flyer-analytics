@@ -1,3 +1,9 @@
-# scala-starter
+# flyer-analytics-service
 
-A basic Scala project template that includes logging and configuration. 
+Service endpoint for the flyer metrics + analytics platform.
+
+## Design
+
+This is the proposed design.
+
+![Design](flyer_analytics.jpg)
