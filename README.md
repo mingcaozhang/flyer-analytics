@@ -8,6 +8,8 @@ This is the proposed design.
 
 ![Design](flyer_analytics.jpg)
 
+NOTE: `flyer-analytics-service` was renamed to `flyer-analytics-beacon`
+
 For the sake of simplicity, I've decided to exclude the usage of Avro in the demo. The benefits are tangible when 
 running production workloads, but is definitely overkill for this usecase, so I've opted for the simpler solution. 
 Kafka will process JSON strings, and the end result will be the same. 
