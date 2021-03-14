@@ -16,7 +16,8 @@ Kafka will process JSON strings, and the end result will be the same.
 
 ## Requirements
 The only dependency needed to run this project is `docker-compose`.
-To run the spark module, you will need to have `Spark` installed, and have `$SPARK_HOME` set.
+To run the spark module, you will need to have `Spark` installed, and have `$SPARK_HOME` set. The version
+I used was `spark-3.1.1`.
 
 ## How to run
 ```bash
