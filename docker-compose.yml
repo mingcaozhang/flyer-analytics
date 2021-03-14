@@ -1,0 +1,69 @@
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: "zookeeper"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: "kafka"
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "beacon-stream:1:1"
+
+  cassandra:
+    image: cassandra:3.11.2
+    container_name: "cassandra"
+    ports:
+      - 9042:9042
+    healthcheck:
+      test: [ "CMD", "cqlsh", "-u cassandra", "-p cassandra" ,"-e describe keyspaces" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  cassandra-load-keyspace:
+    container_name: cassandra-load-keyspace
+    image: cassandra:3.11.2
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ./schema.cql:/schema.cql
+      - ./insert.cql:/insert.cql
+    command: /bin/bash -c "echo initializing cassandra && cqlsh cassandra -f /schema.cql && cqlsh cassandra -f /insert.cql"
+
+  beacon:
+    image: mingcaozhang/flyer-analytics-beacon:0.1.0-SNAPSHOT
+    container_name: "beacon"
+    depends_on:
+      - kafka
+    ports:
+      - 8082:8082
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      FLYER_ANALYTICS_BEACON_HOST: "0.0.0.0"
+      FLYER_ANALYTICS_BEACON_PORT: 8082
+
+  ingest:
+    image: mingcaozhang/flyer-analytics-ingest:0.1.0-SNAPSHOT
+    container_name: "ingest"
+    depends_on:
+      - kafka
+      - cassandra
+      - cassandra-load-keyspace
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      CASSANDRA_NODE: "cassandra:9042"
