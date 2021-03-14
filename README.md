@@ -17,7 +17,7 @@ The only dependency needed to run this project is `docker-compose`.
 
 ## How to run
 ```bash
-docker-compose up -d
+./docker-compose up -d
 ```
 
 To test that the service works, you can run 
