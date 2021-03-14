@@ -1,5 +1,5 @@
 lazy val root = (project in file("."))
-  .aggregate(core, beacon, ingest)
+  .aggregate(core, beacon, ingest, spark)
   .settings(name := "flyer-analytics-service")
 
 lazy val commonSettings =
@@ -28,4 +28,15 @@ lazy val ingest = (project in file("ingest"))
     name := "flyer-analytics-ingest",
     packageName in Docker := "mingcaozhang/flyer-analytics-ingest",
     commonSettings
+  )
+
+lazy val spark = (project in file("spark"))
+  .settings(
+    name := "flyer-analytics-spark",
+    scalaVersion := "2.12.13",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.apache.spark" % "spark-sql_2.12" % "3.1.1",
+      "com.datastax.spark" % "spark-cassandra-connector_2.12" % "3.0.0"
+    )
   )
